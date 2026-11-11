@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Шкільна скринька ідей та відгуків 🚀</title>
+<style>
+  :root {
+    --bg1: #4f46e5;
+    --bg2: #ec4899;
+    --bg3: #f59e0b;
+    --card: rgba(255, 255, 255, 0.95);
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #6366f1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    min-height: 100vh;
+    color: var(--text);
+    background: linear-gradient(135deg, var(--bg1), var(--bg2) 55%, var(--bg3));
+    background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px 40px;
+  }
+  .wrap { width: 100%; max-width: 560px; }
+  header { text-align: center; color: #fff; margin: 12px 0 24px; }
+  header h1 { font-size: clamp(1.6rem, 6vw, 2.2rem); line-height: 1.2; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,.2); }
+  header p { font-size: 1.05rem; opacity: .95; line-height: 1.5; }
+  .card {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 28px 22px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.25);
+    backdrop-filter: blur(8px);
+  }
+  label { display: block; font-weight: 600; margin-bottom: 8px; font-size: .95rem; }
+  .field { margin-bottom: 20px; }
+  select, textarea, input[type="text"] {
+    width: 100%;
+    padding: 14px 16px;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--text);
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  select:focus, textarea:focus, input[type="text"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(99,102,241,.18);
+  }
+  textarea { min-height: 140px; resize: vertical; }
+  .hint { font-size: .8rem; color: var(--muted); margin-top: 6px; }
+  .req { color: #ef4444; }
+  button.send {
+    width: 100%;
+    padding: 16px;
+    font: inherit;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #f97316, #ec4899, #8b5cf6);
+    background-size: 200% 200%;
+    box-shadow: 0 8px 20px rgba(236,72,153,.4);
+    transition: transform .15s, box-shadow .15s, background-position .4s;
+  }
+  button.send:hover { transform: translateY(-2px); background-position: 100% 0; box-shadow: 0 12px 26px rgba(236,72,153,.5); }
+  button.send:active { transform: translateY(0); }
+  button.send:disabled { opacity: .7; cursor: wait; }
+  .error { color: #dc2626; font-size: .9rem; margin-top: 12px; text-align: center; display: none; }
+
+  /* Повідомлення-подяка */
+  .thanks { display: none; text-align: center; padding: 20px 6px; animation: pop .5s ease; }
+  .thanks .emoji { font-size: 4rem; margin-bottom: 10px; }
+  .thanks h2 { font-size: 1.6rem; margin-bottom: 10px; color: var(--accent); }
+  .thanks p { color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
+  .thanks button {
+    padding: 12px 24px; font: inherit; font-weight: 600; cursor: pointer;
+    color: var(--accent); background: #eef2ff; border: none; border-radius: 12px;
+  }
+  @keyframes pop { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: scale(1); } }
+  footer { text-align: center; color: rgba(255,255,255,.85); font-size: .85rem; margin-top: 20px; }
+  .hp { position: absolute; left: -9999px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Шкільна скринька ідей та відгуків 🚀</h1>
+    <p>Маєш ідею, скаргу чи пропозицію? Напиши сюди, і голова старостату це прочитає!</p>
+  </header>
+
+  <main class="card">
+    <form id="feedbackForm" novalidate>
+      <div class="field">
+        <label for="category">Категорія</label>
+        <select id="category" name="category">
+          <option value="Ідея / Пропозиція">💡 Ідея / Пропозиція</option>
+          <option value="Проблема / Скарга">⚠️ Проблема / Скарга</option>
+          <option value="Подяка">💖 Подяка</option>
+          <option value="Інше">✨ Інше</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="message">Твоє повідомлення <span class="req">*</span></label>
+        <textarea id="message" name="message" placeholder="Напиши тут свою думку..." required></textarea>
+      </div>
+
+      <div class="field">
+        <label for="name">Твоє ім'я та клас (необов'язково, можна залишити анонімно)</label>
+        <input type="text" id="name" name="name" placeholder="Наприклад: Олена, 9-Б">
+        <div class="hint">Якщо залишиш поле порожнім, повідомлення буде анонімним.</div>
+      </div>
+
+      <!-- Прихований "пастка для ботів": людина його не бачить -->
+      <input type="text" name="botcheck" class="hp" tabindex="-1" autocomplete="off">
+
+      <button type="submit" class="send" id="sendBtn">Надіслати</button>
+      <div class="error" id="errorMsg"></div>
+    </form>
+
+    <div class="thanks" id="thanks">
+      <div class="emoji">🎉</div>
+      <h2>Дякуємо за твоє повідомлення!</h2>
+      <p>Голова старостату обов'язково його прочитає. Твоя думка допомагає робити нашу школу кращою 💜</p>
+      <button type="button" id="againBtn">Написати ще одне</button>
+    </div>
+  </main>
+
+  <footer>Зроблено з ❤️ для нашої школи</footer>
+</div>
+
+<script>
+  /* ============================================================
+     ДЕ ВСТАВИТИ ПОСИЛАННЯ, ЩОБ ПОВІДОМЛЕННЯ РЕАЛЬНО ПРИХОДИЛИ
+     ============================================================
+
+     ВАРІАНТ 1 (найпростіший) — Web3Forms → повідомлення на пошту:
+       1. Зайди на https://web3forms.com
+       2. Введи свою пошту й отримай "Access Key" (безкоштовно).
+       3. Встав ключ нижче у WEB3FORMS_KEY.
+
+     ВАРІАНТ 2 — Google Forms → повідомлення в Google Таблицю:
+       1. Створи Google Форму з 3 короткими полями (категорія, повідомлення, ім'я).
+       2. Натисни "Надіслати → <> / Попередній перегляд", відкрий форму
+          і в коді сторінки (Ctrl+U) знайди посилання формату
+          https://docs.google.com/forms/d/e/ДОВГИЙ_ID/formResponse
+          та назви полів виду entry.123456789.
+       3. Встав посилання у GOOGLE_FORM_URL, а номери полів — в GOOGLE_ENTRIES.
+
+     Використовуй ОДИН варіант. Поки нічого не вставлено, сторінка
+     працює в демо-режимі (просто показує подяку, нікуди не надсилаючи).
+  */
+
+  const WEB3FORMS_KEY = "";   // ← сюди вставте Access Key від Web3Forms
+
+  const GOOGLE_FORM_URL = ""; // ← сюди посилання, що закінчується на /formResponse
+  const GOOGLE_ENTRIES = {
+    category: "entry.XXXXXXXXX", // ← номер поля "Категорія"
+    message:  "entry.XXXXXXXXX", // ← номер поля "Повідомлення"
+    name:     "entry.XXXXXXXXX"  // ← номер поля "Ім'я та клас"
+  };
+
+  /* ============================================================ */
+
+  const form = document.getElementById("feedbackForm");
+  const thanks = document.getElementById("thanks");
+  const errorMsg = document.getElementById("errorMsg");
+  const sendBtn = document.getElementById("sendBtn");
+
+  function showError(text) {
+    errorMsg.textContent = text;
+    errorMsg.style.display = "block";
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errorMsg.style.display = "none";
+
+    const data = {
+      category: form.category.value,
+      message: form.message.value.trim(),
+      name: form.name.value.trim() || "Анонімно"
+    };
+
+    if (form.botcheck.value) return; // бот — ігноруємо
+    if (!data.message) {
+      showError("Будь ласка, напиши повідомлення 🙂");
+      form.message.focus();
+      return;
+    }
+
+    sendBtn.disabled = true;
+    sendBtn.textContent = "Надсилаємо...";
+
+    try {
+      if (WEB3FORMS_KEY) {
+        const res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_KEY,
+            subject: "Скринька ідей: " + data.category,
+            from_name: data.name,
+            category: data.category,
+            message: data.message,
+            name: data.name
+          })
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.message || "Помилка");
+      } else if (GOOGLE_FORM_URL) {
+        const body = new URLSearchParams();
+        body.append(GOOGLE_ENTRIES.category, data.category);
+        body.append(GOOGLE_ENTRIES.message, data.message);
+        body.append(GOOGLE_ENTRIES.name, data.name);
+        // no-cors: відповідь прочитати не можна, але дані надходять
+        await fetch(GOOGLE_FORM_URL, { method: "POST", mode: "no-cors", body });
+      } else {
+        console.log("Демо-режим. Повідомлення не надіслано:", data);
+        await new Promise(r => setTimeout(r, 600));
+      }
+
+      form.style.display = "none";
+      thanks.style.display = "block";
+      form.reset();
+    } catch (err) {
+      showError("Ой, щось пішло не так 😕 Спробуй ще раз трохи пізніше.");
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = "Надіслати";
+    }
+  });
+
+  document.getElementById("againBtn").addEventListener("click", () => {
+    thanks.style.display = "none";
+    form.style.display = "block";
+  });
+</script>
+</body>
+</html>
